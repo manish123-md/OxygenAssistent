@@ -1,0 +1,34 @@
+name: Build Oxygen APK
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Code checkout karo
+        uses: actions/checkout@v4
+
+      - name: Java 17 install karo
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Gradle se build karo
+        run: |
+          if [ -f "./gradlew" ]; then
+            chmod +x ./gradlew
+            ./gradlew assembleDebug
+          else
+            gradle assembleDebug
+          fi
+
+      - name: APK upload karo
+        uses: actions/upload-artifact@v4
+        with:
+          name: OxygenAssistant-debug-apk
+          path: app/build/outputs/apk/debug/app-debug.apk
